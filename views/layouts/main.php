@@ -22,7 +22,7 @@ AppAsset::register($this);
     <?php $this->head() ?>
     <script> var basePath = '<?=Yii::$app->urlManager->createAbsoluteUrl ( [''] );?>'; </script>
 </head>
-<body>
+<body data-spy="scroll" data-target=".div_scroll" data-offset="50">
 <?php $this->beginBody() ?>
 
 <div class="wrap">

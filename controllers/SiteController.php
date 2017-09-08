@@ -160,6 +160,21 @@ class SiteController extends Controller
         ]);
     }
 
+    public function actionAnalizarTweet(){
+        if(isset($_POST['twitt'])){
+            require __DIR__.'\..\vendor\autoload.php';
+            $language = new LanguageClient([
+                'projectId' => 'modified-wonder-176917',
+                'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+            ]);
+                    
+            return $this->render('apiGoogle2', [
+                'language' => $language,
+                'twittsEnUnaLinea' => $_POST['twitt'],
+            ]);
+        }
+    }        
+
     public function actionHabilitarTweet(){
         //Yii::$app->response->format = Response::FORMAT_JSON;
         $twittsEnUnaLinea = "";
@@ -180,7 +195,7 @@ class SiteController extends Controller
                 'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
             ]);
                     
-            return $this->render('apiGoogle2', [
+            return $this->render('apiGoogle', [
                 'language' => $language,
                 'twittsEnUnaLinea' => $twittsEnUnaLinea,
                 'categorias' => $_POST['categoria']
