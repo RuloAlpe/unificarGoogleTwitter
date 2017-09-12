@@ -131,27 +131,54 @@ class SiteController extends Controller
     public function actionMostrarTwitts(){
         $twitter = new Twitter();
 
-        if(isset($_POST['hashtag']) && isset($_POST['numero']) ){
-            $arrayHashtag = explode(",", $_POST['hashtag']);
-            /*echo count($arrayHashtag);
-            var_dump($arrayHashtag);
-            exit();*/
-            $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
+        if( (isset($_POST['hashtag']) && isset($_POST['numero'])) || (isset($_POST['user']) && isset($_POST['numeroUser'])) ){
             
-            //echo $json;
-            $jsonDecode = json_decode($json);
-            
-            $num_items = count($jsonDecode->statuses);
-            for($i=0; $i<$num_items; $i++){
-                $nuevoTweet = new EntTweets();
+            if(!empty($_POST['hashtag'])){
+                $arrayHashtag = explode(",", $_POST['hashtag']);
+                /*echo count($arrayHashtag);
+                var_dump($arrayHashtag);
+                exit();*/
+                $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
+                
+                //echo $json;
+                $jsonDecode = json_decode($json);
+                
+                $num_items = count($jsonDecode->statuses);
+                for($i=0; $i<$num_items; $i++){
+                    $nuevoTweet = new EntTweets();
+    
+                    $user = $jsonDecode->statuses[$i];
+    
+                    $nuevoTweet->id = $user->id_str;
+                    $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                    $nuevoTweet->txt_tweet =$user->text;
+                    $nuevoTweet->save();
+                }
 
-                $user = $jsonDecode->statuses[$i];
-
-                $nuevoTweet->id = $user->id_str;
-                $nuevoTweet->txt_usuario = $user->user->screen_name;                
-                $nuevoTweet->txt_tweet =$user->text;
-                $nuevoTweet->save();
             }
+            if(!empty($_POST['user'])){
+                $json = $twitter->getTweetsUser($_POST['user'], $_POST['numeroUser']);
+                //echo $json;
+                $jsonDecode = json_decode($json);
+                $num_items = count($jsonDecode);
+                for($i=0; $i<$num_items; $i++){
+                    $nuevoTweet = new EntTweets();
+    
+                    $user = $jsonDecode[$i];
+    
+                    $nuevoTweet->id = $user->id_str;
+                    $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                    $nuevoTweet->txt_tweet =$user->text;
+                    $nuevoTweet->save();
+                }
+
+            }else if(empty($_POST['hashtag'])){
+                $this->redirect(['site/index']);
+                return;
+            }
+        }else{
+            $this->redirect(['site/index']);
+            return;
         }
         $tweets = EntTweets::find()->where(['b_usado'=>0])->all();        
 
