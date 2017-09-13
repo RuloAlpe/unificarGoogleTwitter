@@ -130,17 +130,19 @@ class SiteController extends Controller
 
     public function actionMostrarTwitts(){
         $twitter = new Twitter();
+        $idTwittBd = 0;
+        $idTwittBdUser = 0;
+        $limiteHashtag = null;
+        $limiteUsuario = null;
 
         if( (isset($_POST['hashtag']) && isset($_POST['numero'])) || (isset($_POST['user']) && isset($_POST['numeroUser'])) ){
             
             if(!empty($_POST['hashtag'])){
+                $limiteHashtag = $_POST['numero'];
                 $arrayHashtag = explode(",", $_POST['hashtag']);
-                /*echo count($arrayHashtag);
-                var_dump($arrayHashtag);
-                exit();*/
-                $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
                 
-                //echo $json;
+                $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
+
                 $jsonDecode = json_decode($json);
                 
                 $num_items = count($jsonDecode->statuses);
@@ -153,12 +155,15 @@ class SiteController extends Controller
                     $nuevoTweet->txt_usuario = $user->user->screen_name;                
                     $nuevoTweet->txt_tweet =$user->text;
                     $nuevoTweet->save();
+                    $idTwittBd = $nuevoTweet->id_tweet;
                 }
 
             }
             if(!empty($_POST['user'])){
+                $limiteUsuario = $_POST['numeroUser'];
+                
                 $json = $twitter->getTweetsUser($_POST['user'], $_POST['numeroUser']);
-                //echo $json;
+
                 $jsonDecode = json_decode($json);
                 $num_items = count($jsonDecode);
                 for($i=0; $i<$num_items; $i++){
@@ -170,6 +175,7 @@ class SiteController extends Controller
                     $nuevoTweet->txt_usuario = $user->user->screen_name;                
                     $nuevoTweet->txt_tweet =$user->text;
                     $nuevoTweet->save();
+                    $idTwittBdUser = $nuevoTweet->id_tweet;
                 }
 
             }else if(empty($_POST['hashtag'])){
@@ -180,8 +186,16 @@ class SiteController extends Controller
             $this->redirect(['site/index']);
             return;
         }
-        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();        
-
+        /*if($limiteHashtag){
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->limit($limiteHashtag);                    
+        }
+        if($limiteUsuario){
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->limit($limiteUsuario);                    
+        }else{
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->all();
+        }*/
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+        
         return $this->render('mostrarTweets', [
             'tweets' => $tweets
         ]);

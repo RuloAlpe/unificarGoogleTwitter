@@ -18,16 +18,18 @@ class Twitter{
     function getTweets($hashtag, $num){
         //BUSCAR POR HASHTAG
         $url = 'https://api.twitter.com/1.1/search/tweets.json';
-        $getfield = '?q=%23';
+        //$getfield = '?q=%23';
+        $getfield = '?q=';
         //Verificar si en uno o varios hashtags
         if(count($hashtag) > 1){
             foreach($hashtag as $hash){
                 //$getfield = $getfield . $hash . "%20OR%20%23";
-                echo $hash;            
+                $getfield = $getfield . urlencode($hash) . "%20OR%20";
             }
-            $getfield = $getfield . '&count=' . $num . '&result_type=recent';
+            $getfield = $getfield . '&count=' . $num . '&result_type=recent';                                
         }else{
-            $getfield = '?q=%23'. $hashtag[0] . '&count=' . $num . '&result_type=recent';                    
+            //$getfield = '?q=%23'. $hashtag[0] . '&count=' . $num . '&result_type=recent';
+            $getfield = '?q='. urlencode($hashtag[0]) . '&count=' . $num . '&result_type=recent';
         }
         $requestMethod = 'GET';
         $twitter = new TwitterAPIExchange($this->settings);
@@ -41,9 +43,11 @@ class Twitter{
     function getTweetsUser($user, $num){
         //BUSCAR POR USUARIO
         $url = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
-        $getfield = '?screen_name=' . $user . '&count=' . $num;        
+        //echo $fecha;exit();
+        $getfield = '?screen_name=' . $user . '&count=' . $num;
         $requestMethod = 'GET';
         $twitter = new TwitterAPIExchange($this->settings);
+        //echo $getfield;exit();        
         $json =  $twitter->setGetfield($getfield)
             ->buildOauth($url, $requestMethod)
             ->performRequest();

@@ -9,7 +9,7 @@ use yii\helpers\Url;
         $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
     }
     ?>
-    <input name="twitt" value="<?= $twittEnLinea ?>"><?= $twittEnLinea ?>
+    <input type"text" name="twitt" value="<?= $twittEnLinea ?>"><?= $twittEnLinea ?>
     <button id="js_analizar" type="submit" class="btn btn-primary">Analizar</button>        
 </form>
 

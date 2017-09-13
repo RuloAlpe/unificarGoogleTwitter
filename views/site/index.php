@@ -12,7 +12,7 @@ $this->title = 'My Yii Application';
     <input type="text" class="form-control" name="hashtag" placeholder="Introducir hashtag ej. hashtag">
   </div>
   <div class="form-group">
-    <input type="text" class="form-control" name="numero" placeholder="Numero de twits a buscar">
+    <input type="text" class="form-control" name="numero" placeholder="Numero de twits a buscar max 100">
   </div>
 
   <h3>Buscar por Usuario</h3>  
@@ -20,7 +20,7 @@ $this->title = 'My Yii Application';
     <input type="text" class="form-control" name="user" placeholder="Introducir usuario ej. usuario">
   </div>
   <div class="form-group">
-    <input type="text" class="form-control" name="numeroUser" placeholder="Numero de twits a buscar">
+    <input type="text" class="form-control" name="numeroUser" placeholder="Numero de twits a buscar max 100">
   </div>
 
   <button type="submit" class="btn btn-primary">Buscar</button>
