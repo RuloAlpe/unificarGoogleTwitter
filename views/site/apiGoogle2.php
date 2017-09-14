@@ -1,6 +1,11 @@
 <?php
 use app\models\EntTweets;
 
+$twittEnLinea = " ";
+foreach($tweets as $tweet){
+    $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
+}
+
 $annotation = $language->annotateText($twittsEnUnaLinea);
 $personas = $annotation->entitiesByType('PERSON');
 $organizaciones = $annotation->entitiesByType('ORGANIZATION');
