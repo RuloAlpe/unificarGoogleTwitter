@@ -132,12 +132,21 @@ class SiteController extends Controller
         $twitter = new Twitter();
 
         if( (isset($_POST['hashtag']) && isset($_POST['numero'])) || (isset($_POST['user']) && isset($_POST['numeroUser'])) ){
-            
             if(!empty($_POST['hashtag'])){
-                $limiteHashtag = $_POST['numero'];
                 $arrayHashtag = explode(",", $_POST['hashtag']);
+
+                $hoy = date("Y-m-d");
+                $fecha = null;
+                if($_POST['tiempo'] == 2){
+                    $fecha = date("Y-m-d", strtotime($hoy . '-4 day'));
+                }
+                if($_POST['tiempo'] == 3){
+                    $fecha = date("Y-m-d", strtotime($hoy . '-9 day'));
+                }
                 
-                $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
+                $json = $twitter->getTweets($arrayHashtag, $_POST['numero'], $fecha);
+
+                //echo $json;exit();
 
                 $jsonDecode = json_decode($json);
                 
@@ -155,8 +164,6 @@ class SiteController extends Controller
 
             }
             if(!empty($_POST['user'])){
-                $limiteUsuario = $_POST['numeroUser'];
-                
                 $json = $twitter->getTweetsUser($_POST['user'], $_POST['numeroUser']);
 
                 $jsonDecode = json_decode($json);

@@ -15,13 +15,26 @@ $this->title = 'My Yii Application';
     <input type="text" class="form-control" name="numero" placeholder="Numero de twits a buscar max 100">
   </div>
 
-  <h3>Buscar por Usuario</h3>  
+  <input type="checkbox" name="tiempo" value="1" checked>24 horas
+  <input type="checkbox" name="tiempo" value="2">5 dias
+  <input type="checkbox" name="tiempo" value="3">10 dias
+  <br>
+  <!-- <h3>Buscar por Usuario</h3>  
   <div class="form-group">
     <input type="text" class="form-control" name="user" placeholder="Introducir usuario ej. usuario">
   </div>
   <div class="form-group">
     <input type="text" class="form-control" name="numeroUser" placeholder="Numero de twits a buscar max 100">
-  </div>
+  </div> -->
 
   <button type="submit" class="btn btn-primary">Buscar</button>
 </form>
+
+<script>
+$(':checkbox').on('change',function(){
+ var th = $(this), name = th.prop('name'); 
+ if(th.is(':checked')){
+     $(':checkbox[name="'  + name + '"]').not($(this)).prop('checked',false);   
+  }
+});
+</script>

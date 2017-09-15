@@ -22,7 +22,11 @@ AppAsset::register($this);
 
     <script type="text/javascript" src="../js/fusioncharts.js"></script>
     <script type="text/javascript" src="../js/themes/fusioncharts.theme.fint.js"></script>
-    
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous">
+    </script>
 
     <?php $this->head() ?>
     <script> var basePath = '<?=Yii::$app->urlManager->createAbsoluteUrl ( [''] );?>'; </script>
