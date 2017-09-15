@@ -130,10 +130,6 @@ class SiteController extends Controller
 
     public function actionMostrarTwitts(){
         $twitter = new Twitter();
-        $idTwittBd = 0;
-        $idTwittBdUser = 0;
-        $limiteHashtag = null;
-        $limiteUsuario = null;
 
         if( (isset($_POST['hashtag']) && isset($_POST['numero'])) || (isset($_POST['user']) && isset($_POST['numeroUser'])) ){
             
@@ -155,7 +151,6 @@ class SiteController extends Controller
                     $nuevoTweet->txt_usuario = $user->user->screen_name;                
                     $nuevoTweet->txt_tweet =$user->text;
                     $nuevoTweet->save();
-                    $idTwittBd = $nuevoTweet->id_tweet;
                 }
 
             }
@@ -175,7 +170,6 @@ class SiteController extends Controller
                     $nuevoTweet->txt_usuario = $user->user->screen_name;                
                     $nuevoTweet->txt_tweet =$user->text;
                     $nuevoTweet->save();
-                    $idTwittBdUser = $nuevoTweet->id_tweet;
                 }
 
             }else if(empty($_POST['hashtag'])){
@@ -186,18 +180,18 @@ class SiteController extends Controller
             $this->redirect(['site/index']);
             return;
         }
-        /*if($limiteHashtag){
-            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->limit($limiteHashtag);                    
-        }
-        if($limiteUsuario){
-            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->limit($limiteUsuario);                    
-        }else{
-            $tweets = EntTweets::find()->where(['b_usado'=>0])->andWhere(['>=', 'id_tweet', $idTwittBd])->all();
-        }*/
-        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
         
-        return $this->render('mostrarTweets', [
-            'tweets' => $tweets
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+
+        require __DIR__.'\..\vendor\autoload.php';
+        $language = new LanguageClient([
+            'projectId' => 'modified-wonder-176917',
+            'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+        ]);
+                
+        return $this->render('apiGoogle', [
+            'language' => $language,
+            'tweets' => $tweets,
         ]);
     }
 
