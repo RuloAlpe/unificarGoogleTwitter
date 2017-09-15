@@ -15,8 +15,8 @@ $twittEnLinea = " ";
                 var cSatScoreChart = new FusionCharts({
                     type: 'angulargauge',
                     renderAt: 'chartContainer<?= $tweet->id_tweet ?>',
-                    width: '300',
-                    height: '200',
+                    width: '250',
+                    height: '150',
                     dataFormat: 'json',
                     dataSource: {
                         "chart": {
@@ -89,8 +89,8 @@ $twittEnLinea = " ";
             var cSatScoreChart = new FusionCharts({
                 type: 'angulargauge',
                 renderAt: 'chartContainerGeneral',
-                width: '300',
-                height: '200',
+                width: '250',
+                height: '150',
                 dataFormat: 'json',
                 dataSource: {
                     "chart": {
