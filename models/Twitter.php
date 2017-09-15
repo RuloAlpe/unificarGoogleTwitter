@@ -15,24 +15,37 @@ class Twitter{
         'consumer_secret' => "ctDjorxcO8SXOYKI58MpHKhZaLEhLrY4S17cVAvkiVlgh7ePR5"
     );
 
-    function getTweets($hashtag, $num){
+    function getTweets($hashtag, $num, $fecha = null){
         //BUSCAR POR HASHTAG
         $url = 'https://api.twitter.com/1.1/search/tweets.json';
-        //$getfield = '?q=%23';
+        
         $getfield = '?q=';
         //Verificar si en uno o varios hashtags
-        if(count($hashtag) > 1){
+        $totalHashtags = count($hashtag);
+        if($totalHashtags > 1){
             foreach($hashtag as $hash){
-                //$getfield = $getfield . $hash . "%20OR%20%23";
-                $getfield = $getfield . urlencode($hash) . "%20OR%20";
+                $totalHashtags--;
+                if($totalHashtags == 0){
+                    $getfield = $getfield . urlencode($hash);
+                }else{
+                    $getfield = $getfield . urlencode($hash) . "%20OR%20";                    
+                }
             }
-            $getfield = $getfield . '&count=' . $num . '&result_type=recent';                                
+            if($fecha != null){
+                $getfield = $getfield . '&count=' . $num . '&until=' . $fecha;                
+            }else{
+                $getfield = $getfield . '&count=' . $num . '&result_type=recent';                
+            }
         }else{
-            //$getfield = '?q=%23'. $hashtag[0] . '&count=' . $num . '&result_type=recent';
-            $getfield = '?q='. urlencode($hashtag[0]) . '&count=' . $num . '&result_type=recent';
+            if($fecha != null){
+                $getfield = '?q='. urlencode($hashtag[0]) . '&count=' . $num . '&until=' . $fecha;
+            }else{
+                $getfield = '?q='. urlencode($hashtag[0]) . '&count=' . $num . '&result_type=recent';                
+            }
         }
         $requestMethod = 'GET';
         $twitter = new TwitterAPIExchange($this->settings);
+        //echo $getfield; exit();
         $json =  $twitter->setGetfield($getfield)
             ->buildOauth($url, $requestMethod)
             ->performRequest();
