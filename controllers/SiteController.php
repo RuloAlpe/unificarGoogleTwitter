@@ -63,9 +63,60 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    /*public function actionIndex()
     {
         return $this->render('index');
+    }*/
+    public function actionIndex(){
+        $twitter = new Twitter();
+        if( isset($_POST['hashtag']) && isset($_POST['numero']) ){
+            //Yii::$app->response->format = Response::FORMAT_JSON;
+            $arrayHashtag = explode(",", $_POST['hashtag']);
+            
+            $hoy = date("Y-m-d");
+            $fecha = null;
+            if($_POST['tiempo'] == 2){
+                $fecha = date("Y-m-d", strtotime($hoy . '-4 day'));
+            }
+            if($_POST['tiempo'] == 3){
+                $fecha = date("Y-m-d", strtotime($hoy . '-9 day'));
+            }
+            
+            $json = $twitter->getTweets($arrayHashtag, $_POST['numero'], $fecha);
+
+            //echo $json;exit();
+
+            $jsonDecode = json_decode($json);
+            
+            $num_items = count($jsonDecode->statuses);
+            for($i=0; $i<$num_items; $i++){
+                $nuevoTweet = new EntTweets();
+
+                $user = $jsonDecode->statuses[$i];
+
+                $nuevoTweet->id = $user->id_str;
+                $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                $nuevoTweet->txt_tweet =$user->text;
+                $nuevoTweet->save();
+            }
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+            
+            require __DIR__.'\..\vendor\autoload.php';
+            $language = new LanguageClient([
+                'projectId' => 'modified-wonder-176917',
+                'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+            ]);
+                    
+            return $this->renderAjax('apiGoogle3', [
+                'language' => $language,
+                'tweets' => $tweets,
+            ]);
+
+            //return $this->renderAjax('about');
+        }
+        //echo $_POST['hashtag'];
+        //exit();
+        return $this->render('index2');
     }
 
     /**
