@@ -3,11 +3,17 @@ use app\models\EntTweets;
 
 $twittEnLinea = " ";
 ?>
-<div <div class="col-md-9">
-    <div <div class="col-sm-8">
+
+<div class="col-md-9">
+    <button id="sentimiento_general">Sentiments general</button>    
+    <button id="sentimiento_entidades">Entities Sentiments</button>
+</div>
+<div id="div1" class="col-md-9">
+    <div class="col-sm-8">
         <?php
+        ini_set('max_execution_time', 300);
         foreach($tweets as $tweet){
-            $annotation2 = $language->analyzeSentiment($tweet->txt_tweet);
+            $annotation2 = $language->analyzeSentiment($tweet->txt_tweet);   
             $sentimiento = $annotation2->sentiment();
         ?>
         <script type="text/javascript">
@@ -146,3 +152,104 @@ $twittEnLinea = " ";
         <p><?= count($otros)?> Otros</p>    
     </div>
 </div>
+
+<div id="div2" class="col-sm-9" style="display:none">
+    <?php
+    $source = 'es';
+    $target = 'en';
+
+    $result = $traductor->translate($source, $target, $twittEnLinea);
+    echo "TRADUCCION: " . $result . "<hr>";
+
+    // Get cURL resource
+    $curl = curl_init();
+    // Set some options - we are passing in a useragent too here
+    curl_setopt_array($curl, array(
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL => 'http://localhost:3030/api-google',
+        CURLOPT_USERAGENT => 'Codular Sample cURL Request',
+        CURLOPT_POST => 1,
+        CURLOPT_POSTFIELDS => 'texto='.$result,
+        CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded')
+    ));
+    // Send the request & save response to $resp
+    $resp = curl_exec($curl);
+    // Close request to clear up some resources
+    curl_close($curl);
+    echo "RESPUESTA CURL";
+    //var_dump($resp);
+
+    $respuestas = json_decode($resp);
+    /*echo "<pre>";
+    print_r($respuestas);
+    echo "</pre>";
+    exit();*/
+
+    ?>
+
+    <script>
+    FusionCharts.ready(function () {
+        var wVstrsChart = new FusionCharts({
+            type: 'column2d',
+            renderAt: 'chart-container',
+            id: 'myChart',
+            width: '450',
+            height: '300',
+            dataFormat: 'json',
+            dataSource: {
+                "chart": {
+                    "caption": "Website Visitors WoW Growth",
+                    "subcaption": "Last 10 weeks",
+                    "xAxisName": "Week",
+                    "yAxisName": "Growth",
+                    "numberSuffix": "%",
+                    "theme": "fint",
+                    "showValues": "0",
+                    //Show Zero plane
+                    "showZeroPlane": "1",                                
+                    //Customize Zero Plane Properties 
+                    "zeroPlaneColor":"#003366",
+                    "zeroPlaneAlpha": "100",
+                    "zeroPlaneThickness": "3",
+                    "divLineIsDashed": "0",
+                    "divLineAlpha": "40"
+                },
+                "data": [
+                    <?php foreach($respuestas as $respuesta){ ?>
+                        {
+                            "label": "Week 1",
+                            "value": "14.5"
+                        },
+                    
+                ]
+            }
+        }).render();
+    });
+    </script>
+
+    <?php
+
+    foreach($respuestas as $respuesta){
+        //echo "Texto: " . $respuesta->mentions->text->content . " tipo: " . $respuesta->mentions->type . " sentimiento: " . $respuesta->mentions->sentiment->score . "<br>";
+        echo "Texto: " . $respuesta->name . "<br>";
+        echo "Tipo: " . $respuesta->type . "<br>";
+        echo "Score: " . $respuesta->sentiment->score . "<br>";
+        echo "Magnitude: " . $respuesta->sentiment->magnitude . "<br>";
+        echo "<hr>";
+    }
+    ?>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#sentimiento_general').on('click', function(){
+            $('#div2').css('display', 'none');
+            $('#div1').css('display', '');
+        });
+        $('#sentimiento_entidades').on('click', function(){
+            $('#div1').css('display', 'none');
+            $('#div2').css('display', '');
+        });
+    });
+</script>
+

@@ -7,7 +7,6 @@ $this->title = 'My Yii Application';
 ?>
 <div id="inicio" class="row">
   <div class="col-md-3">
-    <!--<form action="<?= Url::base() . '/site/mostrar-twitts'; ?>" method="POST">-->
     <form>
       <h3>Buscar por hashtag</h3>
       <div class="form-group">

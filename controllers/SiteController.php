@@ -12,6 +12,7 @@ use app\models\Twitter;
 use app\models\EntTweets;
 use yii\web\Response;
 use Google\Cloud\Language\LanguageClient;
+use \Statickidz\GoogleTranslate;
 
 class SiteController extends Controller
 {
@@ -87,8 +88,10 @@ class SiteController extends Controller
             //echo $json;exit();
 
             $jsonDecode = json_decode($json);
+            //var_dump($jsonDecode);exit();
             
             $num_items = count($jsonDecode->statuses);
+            
             for($i=0; $i<$num_items; $i++){
                 $nuevoTweet = new EntTweets();
 
@@ -99,17 +102,21 @@ class SiteController extends Controller
                 $nuevoTweet->txt_tweet =$user->text;
                 $nuevoTweet->save();
             }
-            $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
             
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+
             require __DIR__.'\..\vendor\autoload.php';
             $language = new LanguageClient([
                 'projectId' => 'modified-wonder-176917',
                 'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
             ]);
-                    
+
+            $traductor = new GoogleTranslate();
+            
             return $this->renderAjax('apiGoogle3', [
                 'language' => $language,
                 'tweets' => $tweets,
+                'traductor' => $traductor            
             ]);
 
             //return $this->renderAjax('about');
@@ -246,10 +253,10 @@ class SiteController extends Controller
             'projectId' => 'modified-wonder-176917',
             'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
         ]);
-                
+        
         return $this->render('apiGoogle', [
             'language' => $language,
-            'tweets' => $tweets,
+            'tweets' => $tweets            
         ]);
     }
 
@@ -287,7 +294,7 @@ class SiteController extends Controller
                 'projectId' => 'modified-wonder-176917',
                 'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
             ]);
-                    
+            
             return $this->render('apiGoogle', [
                 'language' => $language,
                 'twittsEnUnaLinea' => $twittsEnUnaLinea,

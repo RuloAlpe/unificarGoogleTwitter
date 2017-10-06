@@ -4,11 +4,14 @@ use app\models\EntTweets;
 $twittEnLinea = " ";
 ?>
 <div class="row">
-    <div <div class="col-sm-8">
+    <div class="col-sm-8">
         <?php
         foreach($tweets as $tweet){
-            $annotation2 = $language->analyzeSentiment($tweet->txt_tweet);
-            $sentimiento = $annotation2->sentiment();
+            if($tweet->txt_tweet == ""){
+
+            }else{
+                $annotation2 = $language->analyzeSentiment($tweet->txt_tweet);
+                $sentimiento = $annotation2->sentiment();
         ?>
         <script type="text/javascript">
             FusionCharts.ready(function () {
@@ -71,6 +74,7 @@ $twittEnLinea = " ";
             $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
             $tweet->b_usado = 1;
             $tweet->save();
+            }
         }
         ?>
     </div>
