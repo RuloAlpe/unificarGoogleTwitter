@@ -39,7 +39,7 @@ $this->title = 'My Yii Application';
           $(':checkbox[name="'  + name + '"]').not($(this)).prop('checked',false);   
         }
       });
-
+      
       $('#submitAnalizar').on('click', function(e){
         e.preventDefault();
         var datos = $("form").serialize();

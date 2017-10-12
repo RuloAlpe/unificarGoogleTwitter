@@ -5,8 +5,8 @@ $twittEnLinea = " ";
 ?>
 
 <div class="col-md-9">
-    <button id="sentimiento_general">Sentiments general</button>    
-    <button id="sentimiento_entidades">Entities Sentiments</button>
+    <button id="sentimiento_general">Sentimiento general</button>    
+    <button id="sentimiento_entidades">Sentimiento por entidad</button>
 </div>
 <div id="div1" class="col-md-9">
     <div class="col-sm-8">
@@ -155,54 +155,59 @@ $twittEnLinea = " ";
 
 <div id="div2" class="col-sm-9" style="display:none">
     <?php
-    $source = 'es';
+    //TRADUCTOR
+    /*$source = 'es';
     $target = 'en';
-
     $result = $traductor->translate($source, $target, $twittEnLinea);
-    echo "TRADUCCION: " . $result . "<hr>";
+    echo "TRADUCCION: " . $result . "<hr>";*/
+    
+    echo "<h2>Sentimiento por entidad</h2>";
 
     // Get cURL resource
     $curl = curl_init();
     // Set some options - we are passing in a useragent too here
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'http://localhost:3030/api-google',
+        CURLOPT_URL => 'http://localhost:3000/api-google',
         CURLOPT_USERAGENT => 'Codular Sample cURL Request',
         CURLOPT_POST => 1,
-        CURLOPT_POSTFIELDS => 'texto='.$result,
+        CURLOPT_POSTFIELDS => 'texto='.$twittEnLinea,//$result,
         CURLOPT_HTTPHEADER => array('Content-Type: application/x-www-form-urlencoded')
     ));
+
+    if(!curl_exec($curl)){
+        die('Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl));
+    }
+
     // Send the request & save response to $resp
     $resp = curl_exec($curl);
     // Close request to clear up some resources
     curl_close($curl);
-    echo "RESPUESTA CURL";
+    //echo "RESPUESTA CURL";
     //var_dump($resp);
 
     $respuestas = json_decode($resp);
     /*echo "<pre>";
     print_r($respuestas);
     echo "</pre>";
-    exit();*/
-
+    exit();*/   
     ?>
-
     <script>
     FusionCharts.ready(function () {
         var wVstrsChart = new FusionCharts({
             type: 'column2d',
             renderAt: 'chart-container',
             id: 'myChart',
-            width: '450',
-            height: '300',
+            width: '650',
+            height: '500',
             dataFormat: 'json',
             dataSource: {
                 "chart": {
-                    "caption": "Website Visitors WoW Growth",
-                    "subcaption": "Last 10 weeks",
-                    "xAxisName": "Week",
-                    "yAxisName": "Growth",
-                    "numberSuffix": "%",
+                    "caption": "Sentimiento por entidad",
+                    //"subcaption": "Last 10 weeks",
+                    "xAxisName": "Entidad",
+                    "yAxisName": "sentimiento",
+                    "numberSuffix": "",
                     "theme": "fint",
                     "showValues": "0",
                     //Show Zero plane
@@ -215,18 +220,24 @@ $twittEnLinea = " ";
                     "divLineAlpha": "40"
                 },
                 "data": [
-                    <?php foreach($respuestas as $respuesta){ ?>
-                        {
-                            "label": "Week 1",
-                            "value": "14.5"
-                        },
-                    
+                    <?php foreach($respuestas as $respuesta){ 
+                        if($respuesta->sentiment->score != 0){
+                            //$result1 = $traductor->translate('en', 'es', $respuesta->name);                        
+                    ?>
+                            {
+                                "label": "<?= $respuesta->name ?>",
+                                "value": "<?= $respuesta->sentiment->score ?>"
+                            },
+                    <?php 
+                        } 
+                    } 
+                    ?>
                 ]
             }
         }).render();
     });
     </script>
-
+    <div id="chart-container">FusionCharts will render here</div>
     <?php
 
     foreach($respuestas as $respuesta){
