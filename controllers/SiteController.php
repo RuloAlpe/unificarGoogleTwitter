@@ -113,7 +113,7 @@ class SiteController extends Controller
 
             $traductor = new GoogleTranslate();
             
-            return $this->renderAjax('apiGoogle3', [
+            return $this->renderAjax('apiGoogle4', [
                 'language' => $language,
                 'tweets' => $tweets,
                 'traductor' => $traductor            

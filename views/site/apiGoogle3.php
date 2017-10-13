@@ -82,10 +82,11 @@ $twittEnLinea = " ";
     </div>
     <?php
     $google = $language->annotateText($twittEnLinea);
-    $personas = $google->entitiesByType('PERSON');
+    $entidades = $google->entities();
+    /*$personas = $google->entitiesByType('PERSON');
     $organizaciones = $google->entitiesByType('ORGANIZATION');
     $localidades = $google->entitiesByType('LOCATION');
-    $otros = $google->entitiesByType('OTHER');
+    $otros = $google->entitiesByType('OTHER');*/
 
     $annotation = $language->analyzeSentiment($twittEnLinea);
     $sentiment = $annotation->sentiment();
@@ -146,10 +147,11 @@ $twittEnLinea = " ";
         <p>Magnitud <?= $sentiment['magnitude'] ?> </p>
         <p>Score <?= $sentiment['score'] ?> </p>
         <br>
-        <p><?= count($personas)?> Personas</p>
-        <p><?= count($organizaciones)?> Organizaciones</p>
-        <p><?= count($localidades)?> Localidades</p>
-        <p><?= count($otros)?> Otros</p>    
+        <p><?= count($entidades)?> Entidades</p>            
+        <p><?php // count($personas)?> Personas</p>
+        <p><?php //count($organizaciones)?> Organizaciones</p>
+        <p><?php // count($localidades)?> Localidades</p>
+        <p><?php // count($otros)?> Otros</p>    
     </div>
 </div>
 
