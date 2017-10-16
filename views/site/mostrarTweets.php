@@ -2,48 +2,25 @@
 use yii\web\View;
 use yii\helpers\Url;
 ?>
-<form id="form-twitter" action="<?= Url::base() . '/site/habilitar-tweet'; ?>" method="POST">
-    <div class="jumbotron">
-        <h2>Categorias</h2>
-        <input type="checkbox" name="categoria[]" value="PERSON">Personas
-        <input type="checkbox" name="categoria[]" value="LOCATION">Localidades
-        <input type="checkbox" name="categoria[]" value="VERB">Verbos
-        <input type="checkbox" name="categoria[]" value="ORGANIZATION">Organizaciones
-        <input type="checkbox" name="categoria[]" value="EVENT">Eventos
-        
-    </div>
-    <input type="checkbox" id="checkAll">Seleccionar todos.
-    
+<form id="form-twitter" action="<?= Url::base() . '/site/analizar-tweet'; ?>" method="POST">
     <?php
+    $twittEnLinea = " ";
     foreach($tweets as $tweet){
-    ?>
-        <div class="jumbotron js_twitter">
-            <input type="checkbox" name="twitter[]" value=<?= $tweet->id_tweet ?>><?= $tweet->txt_tweet ?>
-        </div>
-    <?php
-        $tweet->b_usado = 1;
-        $tweet->save();
+        $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
     }
     ?>
+    <input type"text" name="twitt" value="<?= $twittEnLinea ?>"><?= $twittEnLinea ?>
     <button id="js_analizar" type="submit" class="btn btn-primary">Analizar</button>        
 </form>
 
 <?php
-$this->registerJs("
-    $('#checkAll').click(function(){
-        $('.js_twitter input:checkbox').not(this).prop('checked', this.checked);
-    });
-", View::POS_END );
-?>
 
-<?php
-/*
 $this->registerJs ( "
     $('#js_analizar').on('click', function(e){
         e.preventDefault();
         var data = $('#form-twitter').serialize();
             $.ajax({
-                url: basePath + 'site/habilitar-tweet',
+                url: basePath + 'site/analizar-tweet',
                 data: data,
                 type: 'post',
                 success: function(resp){
@@ -53,5 +30,5 @@ $this->registerJs ( "
             }   
         });
     });
-", View::POS_END );*/
+", View::POS_END );
 ?>

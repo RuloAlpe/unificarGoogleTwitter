@@ -12,6 +12,7 @@ use app\models\Twitter;
 use app\models\EntTweets;
 use yii\web\Response;
 use Google\Cloud\Language\LanguageClient;
+use \Statickidz\GoogleTranslate;
 
 class SiteController extends Controller
 {
@@ -63,9 +64,66 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    /*public function actionIndex()
     {
         return $this->render('index');
+    }*/
+    public function actionIndex(){
+        $twitter = new Twitter();
+        if( isset($_POST['hashtag']) && isset($_POST['numero']) ){
+            //Yii::$app->response->format = Response::FORMAT_JSON;
+            $arrayHashtag = explode(",", $_POST['hashtag']);
+            
+            $hoy = date("Y-m-d");
+            $fecha = null;
+            if($_POST['tiempo'] == 2){
+                $fecha = date("Y-m-d", strtotime($hoy . '-4 day'));
+            }
+            if($_POST['tiempo'] == 3){
+                $fecha = date("Y-m-d", strtotime($hoy . '-9 day'));
+            }
+            
+            $json = $twitter->getTweets($arrayHashtag, $_POST['numero'], $fecha);
+
+            //echo $json;exit();
+
+            $jsonDecode = json_decode($json);
+            //var_dump($jsonDecode);exit();
+            
+            $num_items = count($jsonDecode->statuses);
+            
+            for($i=0; $i<$num_items; $i++){
+                $nuevoTweet = new EntTweets();
+
+                $user = $jsonDecode->statuses[$i];
+
+                $nuevoTweet->id = $user->id_str;
+                $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                $nuevoTweet->txt_tweet =$user->text;
+                $nuevoTweet->save();
+            }
+            
+            $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+
+            require __DIR__.'\..\vendor\autoload.php';
+            $language = new LanguageClient([
+                'projectId' => 'modified-wonder-176917',
+                'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+            ]);
+
+            $traductor = new GoogleTranslate();
+            
+            return $this->renderAjax('apiGoogle4', [
+                'language' => $language,
+                'tweets' => $tweets,
+                'traductor' => $traductor            
+            ]);
+
+            //return $this->renderAjax('about');
+        }
+        //echo $_POST['hashtag'];
+        //exit();
+        return $this->render('index2');
     }
 
     /**
@@ -131,34 +189,91 @@ class SiteController extends Controller
     public function actionMostrarTwitts(){
         $twitter = new Twitter();
 
-        if(isset($_POST['hashtag']) && isset($_POST['numero']) ){
-            $arrayHashtag = explode(",", $_POST['hashtag']);
-            /*echo count($arrayHashtag);
-            var_dump($arrayHashtag);
-            exit();*/
-            $json = $twitter->getTweets($arrayHashtag, $_POST['numero']);
-            
-            //echo $json;
-            $jsonDecode = json_decode($json);
-            
-            $num_items = count($jsonDecode->statuses);
-            for($i=0; $i<$num_items; $i++){
-                $nuevoTweet = new EntTweets();
+        if( (isset($_POST['hashtag']) && isset($_POST['numero'])) || (isset($_POST['user']) && isset($_POST['numeroUser'])) ){
+            if(!empty($_POST['hashtag'])){
+                $arrayHashtag = explode(",", $_POST['hashtag']);
 
-                $user = $jsonDecode->statuses[$i];
+                $hoy = date("Y-m-d");
+                $fecha = null;
+                if($_POST['tiempo'] == 2){
+                    $fecha = date("Y-m-d", strtotime($hoy . '-4 day'));
+                }
+                if($_POST['tiempo'] == 3){
+                    $fecha = date("Y-m-d", strtotime($hoy . '-9 day'));
+                }
+                
+                $json = $twitter->getTweets($arrayHashtag, $_POST['numero'], $fecha);
 
-                $nuevoTweet->id = $user->id_str;
-                $nuevoTweet->txt_usuario = $user->user->screen_name;                
-                $nuevoTweet->txt_tweet =$user->text;
-                $nuevoTweet->save();
+                //echo $json;exit();
+
+                $jsonDecode = json_decode($json);
+                
+                $num_items = count($jsonDecode->statuses);
+                for($i=0; $i<$num_items; $i++){
+                    $nuevoTweet = new EntTweets();
+    
+                    $user = $jsonDecode->statuses[$i];
+    
+                    $nuevoTweet->id = $user->id_str;
+                    $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                    $nuevoTweet->txt_tweet =$user->text;
+                    $nuevoTweet->save();
+                }
+
             }
-        }
-        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();        
+            if(!empty($_POST['user'])){
+                $json = $twitter->getTweetsUser($_POST['user'], $_POST['numeroUser']);
 
-        return $this->render('mostrarTweets', [
-            'tweets' => $tweets
+                $jsonDecode = json_decode($json);
+                $num_items = count($jsonDecode);
+                for($i=0; $i<$num_items; $i++){
+                    $nuevoTweet = new EntTweets();
+    
+                    $user = $jsonDecode[$i];
+    
+                    $nuevoTweet->id = $user->id_str;
+                    $nuevoTweet->txt_usuario = $user->user->screen_name;                
+                    $nuevoTweet->txt_tweet =$user->text;
+                    $nuevoTweet->save();
+                }
+
+            }else if(empty($_POST['hashtag'])){
+                $this->redirect(['site/index']);
+                return;
+            }
+        }else{
+            $this->redirect(['site/index']);
+            return;
+        }
+        
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+
+        require __DIR__.'\..\vendor\autoload.php';
+        $language = new LanguageClient([
+            'projectId' => 'modified-wonder-176917',
+            'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+        ]);
+        
+        return $this->render('apiGoogle', [
+            'language' => $language,
+            'tweets' => $tweets            
         ]);
     }
+
+    public function actionAnalizarTweet(){
+        if(isset($_POST['twitt'])){
+            require __DIR__.'\..\vendor\autoload.php';
+            $language = new LanguageClient([
+                'projectId' => 'modified-wonder-176917',
+                'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+            ]);
+                    
+            return $this->render('apiGoogle2', [
+                'language' => $language,
+                'twittsEnUnaLinea' => $_POST['twitt'],
+            ]);
+        }
+    }        
 
     public function actionHabilitarTweet(){
         //Yii::$app->response->format = Response::FORMAT_JSON;
@@ -179,8 +294,8 @@ class SiteController extends Controller
                 'projectId' => 'modified-wonder-176917',
                 'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
             ]);
-                    
-            return $this->render('apiGoogle2', [
+            
+            return $this->render('apiGoogle', [
                 'language' => $language,
                 'twittsEnUnaLinea' => $twittsEnUnaLinea,
                 'categorias' => $_POST['categoria']
