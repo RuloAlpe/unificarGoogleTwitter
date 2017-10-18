@@ -4,7 +4,9 @@ use app\models\EntTweets;
 $twittEnLinea = " ";
 
 ini_set('max_execution_time', 300);
+$order   = array("\r\n", "\n\r", "\n", "\r", "\t", '"');
 foreach($tweets as $tweet){
+    $tweet->txt_tweet = str_replace($order, ' ', $tweet->txt_tweet);
     $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
     $tweet->b_usado = 1;
     $tweet->save();
@@ -20,18 +22,13 @@ $sentiment = $annotation->sentiment();
     var otros = 0;
     $.ajax({
         url: 'http://104.198.1.4:3000/api-google',
-        data: {texto: 'RT @TabBep: @Bep #IndigenousPeoplesDay @QueenYoNasDa-  we stood together at #standingrock and we will continue to be the voices our people'+
-        'RT @HonorTheEarth: In the spirit of protecting our water + #IndigenousPeoplesDay we will be Riding the Line into Bena - Bug School with o'+
-        'That it took me several tries in one case is a testament to how much erasure theres been of First Nations people. #IndigenousPeoplesDay'+
-        'RT @womensmarch: These cities are celebrating #IndigenousPeoplesDay instead of #ColumbusDay. More places should follow their lead.'},
+        data: {texto: "<?= $twittEnLinea ?>"},
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             "Access-Control-Allow-Origin": "*"
         },
         type: 'post',
         success: function(resp){
-            
-            console.log(resp);
             getEntidades(resp, personas, organizaciones, localidades, otros);
             graficaPersonas(resp);
             graficaOrganizaciones(resp);
@@ -61,7 +58,7 @@ $sentiment = $annotation->sentiment();
     }
 
     function pintarBotones(resp, personas, organizaciones, localidades, otros){
-        $("#js-sentimiento-general").append("<button>"+resp.length+" Entidades</button>"+            
+        $("#js-sentimiento-general").append("<h4>"+resp.length+" Entidades</h4>"+            
         "<button id='btn_personas'>"+personas+" Personas</button>"+
         "<button id='btn_organizaciones'>"+organizaciones+" Organizaciones</button>"+
         "<button id='btn_localidades'>"+localidades+" Localidades</button>"+
@@ -98,11 +95,11 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'PERSON'){                     
+                            if(element.type == 'PERSON' && element.sentiment.score != 0){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
-                                    "link": "JavaScript:showAlert("+element.name+","+element.sentiment.score+")"
+                                    "link": "j-showAlert-"+element.name+","+element.sentiment.score
                                 }); 
                             } 
                         });
@@ -111,8 +108,9 @@ $sentiment = $annotation->sentiment();
                 },
                 events: {
                     'dataplotClick': function(evt, args) {
-                        window.showAlert = function(str, num){ 
-                            console.log(str+num);
+                        window.showAlert = function(str){ 
+                            //console.log(str);
+                            var arr = str.split(","); 
 
                             FusionCharts.ready(function () {
                                 var cSatScoreChart = new FusionCharts({
@@ -156,7 +154,7 @@ $sentiment = $annotation->sentiment();
                                         },
                                         "dials": {
                                             "dial": [{
-                                                "value": ""+num
+                                                "value": ""+arr[1]
                                             }]
                                         }
                                     }
@@ -164,8 +162,8 @@ $sentiment = $annotation->sentiment();
                             });
 
                             //var arr = str.split(",");
-                            $('h4.modal-title').html(str);
-                            $('div.modal-dialog').data('sentimiento', num);                            
+                            $('h4.modal-title').html(arr[0]);
+                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
                             //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
                             $("#myModal").modal();
                             /*$("#myModal").on('show.bs.modal', function () {
@@ -208,11 +206,11 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'ORGANIZATION'){                     
+                            if(element.type == 'ORGANIZATION' && element.sentiment.score != 0){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
-                                    "link": "JavaScript:showAlert("+element.name+","+element.sentiment.score+")"
+                                    "link": "j-showAlert-"+element.name+","+element.sentiment.score
                                 }); 
                             } 
                         });
@@ -221,8 +219,9 @@ $sentiment = $annotation->sentiment();
                 },
                 events: {
                     'dataplotClick': function(evt, args) {
-                        window.showAlert = function(str, num){ 
-                            console.log(str+num);
+                        window.showAlert = function(str){ 
+                            //console.log(str+num);
+                            var arr = str.split(","); 
 
                             FusionCharts.ready(function () {
                                 var cSatScoreChart = new FusionCharts({
@@ -266,7 +265,7 @@ $sentiment = $annotation->sentiment();
                                         },
                                         "dials": {
                                             "dial": [{
-                                                "value": ""+num
+                                                "value": ""+arr[1]
                                             }]
                                         }
                                     }
@@ -274,8 +273,8 @@ $sentiment = $annotation->sentiment();
                             });
 
                             //var arr = str.split(",");
-                            $('h4.modal-title').html(str);
-                            $('div.modal-dialog').data('sentimiento', num);                            
+                            $('h4.modal-title').html(arr[0]);
+                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
                             //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
                             $("#myModal").modal();
                             /*$("#myModal").on('show.bs.modal', function () {
@@ -318,11 +317,11 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'LOCATION'){                     
+                            if(element.type == 'LOCATION' && element.sentiment.score != 0){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
-                                    "link": "JavaScript:showAlert("+element.name+","+element.sentiment.score+")"
+                                    "link": "j-showAlert-"+element.name+","+element.sentiment.score
                                 }); 
                             } 
                         });
@@ -331,8 +330,9 @@ $sentiment = $annotation->sentiment();
                 },
                 events: {
                     'dataplotClick': function(evt, args) {
-                        window.showAlert = function(str, num){ 
-                            console.log(str+num);
+                        window.showAlert = function(str){ 
+                            //console.log(str+num);
+                            var arr = str.split(","); 
 
                             FusionCharts.ready(function () {
                                 var cSatScoreChart = new FusionCharts({
@@ -376,7 +376,7 @@ $sentiment = $annotation->sentiment();
                                         },
                                         "dials": {
                                             "dial": [{
-                                                "value": ""+num
+                                                "value": ""+arr[1]
                                             }]
                                         }
                                     }
@@ -384,8 +384,8 @@ $sentiment = $annotation->sentiment();
                             });
 
                             //var arr = str.split(",");
-                            $('h4.modal-title').html(str);
-                            $('div.modal-dialog').data('sentimiento', num);                            
+                            $('h4.modal-title').html(arr[0]);
+                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
                             //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
                             $("#myModal").modal();
                             /*$("#myModal").on('show.bs.modal', function () {
@@ -428,11 +428,11 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type != 'PERSON' && element.type != 'ORGANIZATION' && element.type != 'LOCATION'){                     
+                            if(element.type != 'PERSON' && element.type != 'ORGANIZATION' && element.type != 'LOCATION' && element.sentiment.score != 0){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
-                                    "link": "JavaScript:showAlert("+element.name+","+element.sentiment.score+")"
+                                    "link": "j-showAlert-"+element.name+","+element.sentiment.score
                                 }); 
                             } 
                         });
@@ -442,7 +442,8 @@ $sentiment = $annotation->sentiment();
                 events: {
                     'dataplotClick': function(evt, args) {
                         window.showAlert = function(str, num){ 
-                            console.log(str+num);
+                            //console.log(str+num);
+                            var arr = str.split(",");
 
                             FusionCharts.ready(function () {
                                 var cSatScoreChart = new FusionCharts({
@@ -486,7 +487,7 @@ $sentiment = $annotation->sentiment();
                                         },
                                         "dials": {
                                             "dial": [{
-                                                "value": ""+num
+                                                "value": ""+arr[1]
                                             }]
                                         }
                                     }
@@ -494,8 +495,8 @@ $sentiment = $annotation->sentiment();
                             });
 
                             //var arr = str.split(",");
-                            $('h4.modal-title').html(str);
-                            $('div.modal-dialog').data('sentimiento', num);                            
+                            $('h4.modal-title').html(arr[0]);
+                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
                             //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
                             $("#myModal").modal();
                             /*$("#myModal").on('show.bs.modal', function () {
