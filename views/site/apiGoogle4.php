@@ -8,8 +8,8 @@ $order   = array("\r\n", "\n\r", "\n", "\r", "\t", '"');
 foreach($tweets as $tweet){
     $tweet->txt_tweet = str_replace($order, ' ', $tweet->txt_tweet);
     $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
-    $tweet->b_usado = 1;
-    $tweet->save();
+    //$tweet->b_usado = 1;
+    //$tweet->save();
 }
 
 $annotation = $language->analyzeSentiment($twittEnLinea);
@@ -385,12 +385,10 @@ $sentiment = $annotation->sentiment();
 
                             //var arr = str.split(",");
                             $('h4.modal-title').html(arr[0]);
-                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
-                            //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
+                            $('div.modal-dialog').data('sentimiento', arr[1]);
+
                             $("#myModal").modal();
-                            /*$("#myModal").on('show.bs.modal', function () {
-                                alert(arr[1]);
-                            });*/
+                            
                         };
                     }
                 }
@@ -495,13 +493,16 @@ $sentiment = $annotation->sentiment();
                             });
 
                             //var arr = str.split(",");
-                            $('h4.modal-title').html(arr[0]);
-                            $('div.modal-dialog').data('sentimiento', arr[1]);                            
-                            //alert("[Example for the 'j-' prefix] \n" + arr[0] + " juice sales for the last year: " + arr[1]);
-                            $("#myModal").modal();
-                            /*$("#myModal").on('show.bs.modal', function () {
-                                alert(arr[1]);
-                            });*/
+                            //$('h4.modal-title').html(arr[0]);
+                            //$('div.modal-dialog').data('sentimiento', arr[1]);
+
+                            $.ajax({
+                                url: "http://localhost/unificarGoogleTwitter/web/site/buscar-palabra?pal="+arr[0]+"&sent="+arr[1],
+                                success: function(){
+                                    $("#myModal").modal();
+                                }
+                            });
+                            
                         };
                     }
                 }
@@ -669,24 +670,3 @@ foreach($respuestas as $respuesta){
         }
     }, '#btn_otros');
 </script>
-
-<!-- Modal -->
-<div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Modal Header</h4>
-        </div>
-        <div class="modal-body">
-          <!-- <p class="modal-body-text">Some text in the modal.</p> -->
-            <div id="chartContainerEntidadl">FusionCharts XT will load here!</div>   
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>

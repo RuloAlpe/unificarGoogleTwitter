@@ -126,6 +126,27 @@ class SiteController extends Controller
         return $this->render('index2');
     }
 
+    public function actionBuscarPalabra($pal, $sent){
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+        $encontrados = [];
+        $i = 0;
+        foreach($tweets as $tweet){
+            //echo $tweet->txt_tweet . "////-" . $pal; 
+            $resultado = strpos($tweet->txt_tweet, $pal);
+            if($resultado !== false){
+                $encontrados[$i] = $tweet->txt_tweet;
+                $i = $i + 1;
+            }
+        }
+        var_dump($encontrados);exit;
+
+        return $this->renderAjax('modal',[
+            'encontrados' => $encontrados,
+            'pal' => $pal,
+            'sent' => $sent
+        ]);
+    }
+
     /**
      * Login action.
      *
