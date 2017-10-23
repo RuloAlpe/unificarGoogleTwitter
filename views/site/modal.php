@@ -1,4 +1,53 @@
-
+<script>
+FusionCharts.ready(function () {
+    var cSatScoreChart = new FusionCharts({
+        type: 'angulargauge',
+        renderAt: 'chartContainerEntidadl',
+        width: '250',
+        height: '150',
+        dataFormat: 'json',
+        dataSource: {
+            "chart": {
+                //"caption": "Customer Satisfaction Score",
+                //"subcaption": "Last week",
+                "lowerLimit": "-1",
+                "upperLimit": "1",
+                "showGaugeBorder": "1",
+                "gaugeBorderColor": "#111111",
+                "gaugeBorderThickness": "1",
+                "gaugeBorderAlpha": "1",
+                "showValue": "1",
+                "valueBelowPivot": "1",
+                "theme": "fint"
+            },
+            "colorRange": {
+                "color": [
+                    {
+                        "minValue": "-1",
+                        "maxValue": "-0.25",
+                        "code": "#e44a00"
+                    },
+                    {
+                        "minValue": "-0.25",
+                        "maxValue": "0.25",
+                        "code": "#f8bd19"
+                    },
+                    {
+                        "minValue": "0.25",
+                        "maxValue": "1",
+                        "code": "#6baa01"
+                    }
+                ]
+            },
+            "dials": {
+                "dial": [{
+                    "value": "<?= $sent ?>"
+                }]
+            }
+        }
+    }).render();
+});
+</script>
 <!-- Modal -->
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog">
@@ -25,9 +74,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $(document).ready({
-        $("#myModal").modal();
-    });
-</script>
