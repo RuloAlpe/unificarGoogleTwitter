@@ -19,9 +19,12 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+        'css/ladda-themeless.min.css'
     ];
     public $js = [
-        'https://code.jquery.com/jquery-3.2.1.min.js'
+        'https://code.jquery.com/jquery-3.2.1.min.js',
+        'js/spin.min.js',
+        'js/ladda.min.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',

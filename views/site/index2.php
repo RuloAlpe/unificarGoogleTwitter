@@ -28,7 +28,7 @@ $this->title = 'My Yii Application';
         <input type="text" class="form-control" name="numeroUser" placeholder="Numero de twits a buscar max 100">
       </div> -->
 
-      <button id="submitAnalizar" class="btn btn-primary">Buscar</button>
+      <button id="submitAnalizar" class="btn btn-primary ladda-button" data-style="zoom-in"><span class="ladda-label">Buscar</span></button>
     </form>
 
     <script>
@@ -39,9 +39,10 @@ $this->title = 'My Yii Application';
           $(':checkbox[name="'  + name + '"]').not($(this)).prop('checked',false);   
         }
       });
-      
+      var l = Ladda.create(document.getElementById("submitAnalizar"));
       $('#submitAnalizar').on('click', function(e){
         e.preventDefault();
+        l.start();
         var datos = $("form").serialize();
         //console.log(datos);
         $.ajax({
@@ -51,6 +52,7 @@ $this->title = 'My Yii Application';
           type: "POST",
           success: function(resp){
             //console.log(resp);
+            l.stop();
             $('#inicio').append(resp);
           }
         });
@@ -58,6 +60,4 @@ $this->title = 'My Yii Application';
     });
     </script>
   </div>
-
-
 </div>
