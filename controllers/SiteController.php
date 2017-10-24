@@ -70,6 +70,11 @@ class SiteController extends Controller
     }*/
     public function actionIndex(){
         $twitter = new Twitter();
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+        foreach($tweets as $tweet){
+            $tweet->b_usado = 1;
+            $tweet->save();
+        }
         if( isset($_POST['hashtag']) && isset($_POST['numero']) ){
             //Yii::$app->response->format = Response::FORMAT_JSON;
             $arrayHashtag = explode(",", $_POST['hashtag']);
@@ -124,6 +129,26 @@ class SiteController extends Controller
         //echo $_POST['hashtag'];
         //exit();
         return $this->render('index2');
+    }
+
+    public function actionBuscarPalabra($pal, $sent){
+        $tweets = EntTweets::find()->where(['b_usado'=>0])->all();
+        $encontrados = [];
+        $i = 0;
+        foreach($tweets as $tweet){
+            //echo $tweet->txt_tweet . "////-" . $pal; 
+            $resultado = strpos($tweet->txt_tweet, $pal);
+            if($resultado !== false){
+                $encontrados[$i] = $tweet->txt_tweet;
+                $i = $i + 1;
+            }
+        }
+
+        return $this->renderAjax('modal',[
+            'encontrados' => $encontrados,
+            'pal' => $pal,
+            'sent' => $sent
+        ]);
     }
 
     /**
