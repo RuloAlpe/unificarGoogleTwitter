@@ -30,8 +30,14 @@ $this->title = 'My Yii Application';
 
       <button id="submitAnalizar" class="btn btn-primary ladda-button" data-style="zoom-in"><span class="ladda-label">Buscar</span></button>
     </form>
+  </div>
 
-    <script>
+  <div id="js-datos" class="col-md-9">
+  </div>
+  
+</div>
+
+<script>
     $(document).ready(function(){
       $(':checkbox').on('change',function(){
       var th = $(this), name = th.prop('name'); 
@@ -53,11 +59,9 @@ $this->title = 'My Yii Application';
           success: function(resp){
             //console.log(resp);
             l.stop();
-            $('#inicio').append(resp);
+            $('#js-datos').html(resp);
           }
         });
       });
     });
     </script>
-  </div>
-</div>

@@ -4,7 +4,7 @@ use app\models\EntTweets;
 $twittEnLinea = " ";
 
 ini_set('max_execution_time', 300);
-$order   = array("\r\n", "\n\r", "\n", "\r", "\t", '"');
+$order   = array("\r\n", "\n\r", "\n", "\r", "\t", '"', ',');
 foreach($tweets as $tweet){
     $tweet->txt_tweet = str_replace($order, ' ', $tweet->txt_tweet);
     $twittEnLinea = $twittEnLinea .  $tweet->txt_tweet . " ";
@@ -29,11 +29,15 @@ $sentiment = $annotation->sentiment();
         },
         type: 'post',
         success: function(resp){
-            getEntidades(resp, personas, organizaciones, localidades, otros);
-            graficaPersonas(resp);
-            graficaOrganizaciones(resp);
-            graficaLocalidades(resp);
-            graficaOtros(resp);
+            if(resp.length > 1){
+                getEntidades(resp, personas, organizaciones, localidades, otros);
+                graficaPersonas(resp);
+                graficaOrganizaciones(resp);
+                graficaLocalidades(resp);
+                graficaOtros(resp);
+            }else{
+                console.log("Error de Api google");
+            }
         }
     });
 

@@ -144,7 +144,14 @@ class SiteController extends Controller
             }
         }
 
+        require __DIR__.'\..\vendor\autoload.php';
+        $language = new LanguageClient([
+            'projectId' => 'modified-wonder-176917',
+            'keyFilePath' => '../web/Mi primer proyecto-449267dd9cee.json'
+        ]);
+
         return $this->renderAjax('modal',[
+            'language' => $language,
             'encontrados' => $encontrados,
             'pal' => $pal,
             'sent' => $sent
