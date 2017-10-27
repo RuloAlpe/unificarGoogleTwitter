@@ -99,7 +99,7 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'PERSON' && element.sentiment.score != 0){                     
+                            if(element.type == 'PERSON' /*&& element.sentiment.score != 0*/){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
@@ -163,7 +163,7 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'ORGANIZATION' && element.sentiment.score != 0){                     
+                            if(element.type == 'ORGANIZATION' /*&& element.sentiment.score != 0*/){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
@@ -227,7 +227,7 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type == 'LOCATION' && element.sentiment.score != 0){                     
+                            if(element.type == 'LOCATION' /*&& element.sentiment.score != 0*/){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
@@ -291,7 +291,7 @@ $sentiment = $annotation->sentiment();
                     "data": (function(){
                         var data = [];
                         resp.forEach(function(element) {
-                            if(element.type != 'PERSON' && element.type != 'ORGANIZATION' && element.type != 'LOCATION' && element.sentiment.score != 0){                     
+                            if(element.type != 'PERSON' && element.type != 'ORGANIZATION' && element.type != 'LOCATION' /*&& element.sentiment.score != 0*/){                     
                                 data.push({
                                     "label": element.name,
                                     "value": element.sentiment.score,
@@ -402,6 +402,7 @@ $sentiment = $annotation->sentiment();
 
     <div id="div_otros" class="col-md-9 entidad" style="display: none">
         <div id="chart-container4">FusionCharts will render here</div>
+        <input type="checkbox">Input
     </div>
 </div>
 
@@ -437,4 +438,36 @@ $sentiment = $annotation->sentiment();
             $('#div_otros').css('display', '');
         }
     }, '#btn_otros');
+
+    $(document).on({
+        'click' : function(e) {
+            e.preventDefault();
+            $('#myChart4').setChartAttribute({
+                'data': [
+                    {
+                        "label": "Mon",
+                        "value": "4123"
+                    }, {
+                        "label": "Tue",
+                            "value": "4633"
+                    }, {
+                        "label": "Wed",
+                            "value": "5507"
+                    }, {
+                        "label": "Thu",
+                            "value": "4910"
+                    }, {
+                        "label": "Fri",
+                            "value": "5529"
+                    }, {
+                        "label": "Sat",
+                            "value": "5803"
+                    }, {
+                        "label": "Sun",
+                        "value": "6202",
+                    }
+                ]
+            });
+        }
+    }, 'input');
 </script>
